@@ -51,7 +51,8 @@ RequiredModules = @(
     @{
         ModuleName = 'PScribo'
         ModuleVersion = '0.7.24'
-    }
+    },
+    'AsBuiltReport.VMware.vSphere'
 )
 
 # Assemblies that must be loaded prior to importing this module
