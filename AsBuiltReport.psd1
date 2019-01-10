@@ -54,6 +54,7 @@ RequiredModules = @(
     },
     'AsBuiltReport.VMware.vSphere'
 	'AsBuiltReport.VMware.NSXv'
+	'AsBuiltReport.PureStorage.FlashArray'
 )
 
 # Assemblies that must be loaded prior to importing this module
