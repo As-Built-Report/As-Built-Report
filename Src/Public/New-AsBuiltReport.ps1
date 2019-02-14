@@ -170,7 +170,7 @@ function New-AsBuiltReport {
 
         $ReportModule = "AsBuiltReport.$Report"
         $ReportModuleBase = (Get-Module -Name $ReportModule).ModuleBase
-        $ReportModuleConfig = Join-Path -Path $ReportModuleBase -ChildPath 'Config.json'
+        $ReportModuleConfig = Join-Path -Path $ReportModuleBase -ChildPath "$ReportModule.json"
 
         if (Test-Path -Path $ReportModuleConfig) {
             $Global:ReportConfig = Get-Content -Path $ReportModuleConfig | ConvertFrom-Json
