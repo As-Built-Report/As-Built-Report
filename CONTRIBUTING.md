@@ -75,5 +75,77 @@ Use [PSScriptAnalyzer](https://github.com/PowerShell/PSScriptAnalyzer) to check 
 ### DON'T
 - Do not include code within report script to install or import PowerShell modules. Instead, use [\#requires](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_requires?view=powershell-6) statements to ensure Windows PowerShell version, modules, snap-ins, and module and snap-in version prerequisites are met.
 
+
+## Creating a New Report Repository
+
+If you are interested in creating a new report for the AsBuiltReport project that does not yet exist, the information in this section details the process to create a new repository that will contain the new report.
+
+1. Ask a project owner to create a new repository for your new report under the organisation on GitHub, following the naming standard `AsBuiltReport.<Vendor>.Solution`. In these intructions we will use an example by using HPE's Nimble Storage product, so the repository will be named `AsBuiltReport.HPE.NimbleStorage`. The project owner will create a new repository with a master branch and a license file and nothing else in the repository. When the repository is created, make a fork of the repository and clone it to your machine using git.
+
+2. Open the newly created report folder and create a Powershell `.psm1` file, using the same name as the root folder for the file name. In this example, the .psm1 file will be called `AsBuiltReport.HPE.NimbleStorage.psm1`. Enter the code below in to the .psm1 file (you can also copy this file from another AsBuiltReport Repository and rename it if you prefer).
+
+```Powershell
+# Get public function definition files and dot source them
+$Public = @(Get-ChildItem -Path $PSScriptRoot\Src\Public\*.ps1)
+
+foreach ($Module in $Public) {
+    try {
+        . $Module.FullName
+    } catch {
+        Write-Error -Message "Failed to import function $($Module.FullName): $_"
+    }
+}
+
+Export-ModuleMember -Function $Public.BaseName
+```
+
+3. Copy the .github folder from another AsbuiltReport repository in to the root of the new report folder. This file contains the default Pull Request template for the project as well as the Issue Templates for the project. These should be standard across all of the repositories for the AsBuiltReport project
+
+4. Copy the .vscode folder from another AsBuiltReport repository in to the root of the new report folder. This contains the Visual Studio code style that is used for consistency across all of the repositories in the AsBuiltReport project
+
+5. Create the following folder structure under the root folder:
+
+```
+───SRC
+    ├───Assets
+    │   └───Styles
+    └───Public
+```
+
+6. In the `Public` folder, create a .ps1 file named `Invoke-<ReportName>.ps1`. For example, `Invoke-AsBuiltReport.HPE.NimbleStorage.ps1`. This powershell script file will contain at least one function, with the function name being the same as the ps1 file, so in thie example the function would be named `Invoke-AsBuiltReport.HPE.NimbleStorage`
+
+7. In the project root folder, create a JSON file, named <ReportName>.json. For example, `AsBuiltReport.HPE.NimbleStorage.json`. Copy the json configuration below in to the file as a starting point:
+```json
+{
+    "Options": {
+    },
+    "InfoLevel": {
+        "_comment_": "0 = Disabled, 1 = Summary, 2 = Informative, 3 = Detailed, 4 = Adv Detailed, 5 = Comprehensive"
+    },
+    "HealthCheck": {
+    }
+}
+```
+
+8. We now need to create a Powershell module manifest file. Open powershell and change your directory to the root folder of the new report. Change the data in the example below for the `$manifest` variable to show the accurate details for your new report. Run the code below in the powershell session to create a new Powershell manifest file, which should result in a `psd1` file being created in the root folder for the new report:
+
+```Powershell
+$manifest = @{
+    Path              = '.\AsBuiltReport.HPE.NimbleStorage.psd1'
+    RootModule        = 'AsBuiltReport.HPE.NimbleStorage.psm1' 
+    Author            = 'Matthew Allford'
+	Description		  = 'A PowerShell module to generate an as built report on the configuration of HPE Nimble Storage arrays.'
+	FunctionsToExport = 'Invoke-AsBuiltReport.HPE.NimbleStorage'
+}
+New-ModuleManifest @manifest
+```
+
+9. Create a README.md file in the root folder. Ensure the README contains useful information before your first pull request!
+
+10. That's the main shell for a new report repository completed! Make a Pull Request from your fork to the main repository for the initial commit with the main framework for the new report
+
+The last step is to make a pull request to the main AsBuiltReport project to add your new report as a Required module for the project. AsBuiltReport contains a file in the root directory called `AsBuiltReport.psd1`. Make a pull request that adds your new report repository name in to the "Required Modules" section.
+
+
 ## License
 By contributing, you agree that your contributions will be licensed under its MIT License.
