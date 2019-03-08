@@ -8,6 +8,7 @@ function New-AsBuiltConfig {
     Write-Host '  <      As Built Report Information      >  ' -ForegroundColor Cyan
     Write-Host '---------------------------------------------' -ForegroundColor Cyan
     #$DefaultReportName = "$($Report.Split('.')[0]) $($Report.Split('.')[1]) - As Built Report"
+    <#
     $ReportName = Read-Host -Prompt "Enter the name of the As Built report [As Built Report]"
     if (($ReportName -like $null) -or ($ReportName -eq "")) {
         $ReportName = "As Built Report"
@@ -20,15 +21,16 @@ function New-AsBuiltConfig {
     if (($ReportStatus -like $null) -or ($ReportStatus -eq "")) {
         $ReportStatus = "Released"
     }
+    #>
     $ReportAuthor = Read-Host -Prompt "Enter the name of the Author for this As Built report [$env:USERNAME]"
     if (($ReportAuthor -like $null) -or ($ReportAuthor -eq "")) {
         $ReportAuthor = $env:USERNAME
     }
 
     $Config.Report = @{
-        'Name' = $ReportName
-        'Version' = $ReportVersion
-        'Status' = $ReportStatus
+        #'Name' = $ReportName
+        #'Version' = $ReportVersion
+        #'Status' = $ReportStatus
         'Author' = $ReportAuthor
     }
     #endregion Report configuration
@@ -39,9 +41,11 @@ function New-AsBuiltConfig {
     Write-Host '  <          Company Information          >  ' -ForegroundColor Cyan
     Write-Host '---------------------------------------------' -ForegroundColor Cyan
     $CompanyInfo = Read-Host -Prompt "Would you like to enter Company information for the As Built report? (y/n)"
-    $CompanyInfoResponse = Test-ReadHostResponse -Response $CompanyInfo
+    while ("y", "n" -notcontains $CompanyInfo) {
+        $CompanyInfo = Read-Host -Prompt "Would you like to enter Company information for the As Built report? (y/n)"
+    }
 
-    if ($CompanyInfoResponse) {
+    if ($CompanyInfo -eq 'y') {
         $CompanyFullName = Read-Host -Prompt "Enter the Full Company Name"
         $CompanyShortName = Read-Host -Prompt "Enter the Company Short Name"
         $CompanyContact = Read-Host -Prompt "Enter the Company Contact"
@@ -67,9 +71,11 @@ function New-AsBuiltConfig {
     Write-Host '---------------------------------------------' -ForegroundColor Cyan
 
     $MailInfo = Read-Host -Prompt "Would you like to enter SMTP information for the As Built report? (y/n)"
-    $MailInfoResponse = Test-ReadHostResponse -Response $MailInfo
+    while ("y", "n" -notcontains $MailInfo) {
+        $MailInfo = Read-Host -Prompt "Would you like to enter SMTP information for the As Built report? (y/n)"
+    }
 
-    if ($MailInfoResponse) {
+    if ($MailInfo -eq 'y') {
         $MailServer = Read-Host -Prompt "Enter the mail server FQDN / IP address"
         $MailServerPort = Read-Host -Prompt "Enter the mail server port number [25/587]"
         $MailServerUseSSL = Read-Host -Prompt "Use SSL for mail server connection? (true/false)"
@@ -92,11 +98,14 @@ function New-AsBuiltConfig {
 
     #region Report Configuration Folder
     Clear-Host
+    #Write-Host '---------------------------------------------' -ForegroundColor Cyan
+    #Write-Host '  <     Report Configuration Folder       >  ' -ForegroundColor Cyan
+    #Write-Host '---------------------------------------------' -ForegroundColor Cyan
     Write-Host '---------------------------------------------' -ForegroundColor Cyan
-    Write-Host '  <     Report Configuration Folder       >  ' -ForegroundColor Cyan
+    Write-Host '  <         Report Configuration          >  ' -ForegroundColor Cyan
     Write-Host '---------------------------------------------' -ForegroundColor Cyan
     $ReportConfigFolder = Read-Host -Prompt "Enter the full path of the folder to use for storing report JSON configuration Files and custom style scripts [$env:USERPROFILE\AsBuiltFiles]"
-    if(($ReportConfigFolder -like $null) -or ($ReportConfigFolder -eq "")) {
+    if (($ReportConfigFolder -like $null) -or ($ReportConfigFolder -eq "")) {
         $ReportConfigFolder = "$env:USERPROFILE\AsBuiltFiles"
     }
 
@@ -120,23 +129,24 @@ function New-AsBuiltConfig {
         try {
             $AsBuiltReportModules = Get-Module -Name "AsBuiltReport.*"
             Foreach ($AsBuiltReportModule in $AsBuiltReportModules) {
-                $AsBuiltReportName = $AsBuiltReportModule.Name.Replace("AsBuiltReport.","")
+                $AsBuiltReportName = $AsBuiltReportModule.Name.Replace("AsBuiltReport.", "")
                 if (Test-Path -Path "$($ReportConfigFolder)\$($AsBuiltReportModule.Name).json") {
-                    Clear-Host
-                    Write-Host '---------------------------------------------' -ForegroundColor Cyan
-                    Write-Host '  <      Report Configuration JSON        >  ' -ForegroundColor Cyan
-                    Write-Host '---------------------------------------------' -ForegroundColor Cyan
+                    #Clear-Host
+                    #Write-Host '---------------------------------------------' -ForegroundColor Cyan
+                    #Write-Host '  <      Report Configuration JSON        >  ' -ForegroundColor Cyan
+                    #Write-Host '---------------------------------------------' -ForegroundColor Cyan
                     $OverwriteReportJSON = Read-Host -Prompt "A report JSON already exists in the specified folder for $($AsBuiltReportModule.Name). Would you like to overwrite it? (y/n)"
-                    $OverwriteReportJSON = Test-ReadHostResponse -Response $OverwriteReportJSON
-                    if ($OverwriteReportJSON) {
+                    while ("y", "n" -notcontains $OverwriteReportJSON) {
+                        $OverwriteReportJSON = Read-Host -Prompt "A report JSON already exists in the specified folder for $($AsBuiltReportModule.Name). Would you like to overwrite it? (y/n)"
+                    }
+                    if ($OverwriteReportJSON -eq 'y') {
                         New-AsBuiltReportConfig -Report $AsBuiltReportName -Path $ReportConfigFolder
                     }
                 } else {
                     New-AsBuiltReportConfig -Report $AsBuiltReportName -Path $ReportConfigFolder
                 }
             }
-        }
-        catch {
+        } catch {
             Write-Error $_
         }
     }
@@ -147,10 +157,12 @@ function New-AsBuiltConfig {
     Write-Host '---------------------------------------------' -ForegroundColor Cyan
     Write-Host '  <     As Built Report Configuration     >  ' -ForegroundColor Cyan
     Write-Host '---------------------------------------------' -ForegroundColor Cyan
-    $SaveAsBuiltConfig = Read-Host -Prompt "Would you like to save the As Built configuration file? (y/N)"
-    $Save = Test-ReadHostResponse -Response $SaveAsBuiltConfig
+    $SaveAsBuiltConfig = Read-Host -Prompt "Would you like to save the As Built configuration file? (y/n)"
+    while ("y", "n" -notcontains $SaveAsBuiltConfig) {
+        $SaveAsBuiltConfig = Read-Host -Prompt "Would you like to save the As Built configuration file? (y/n)"
+    }
 
-    if ($Save) {
+    if ($SaveAsBuiltConfig -eq 'y') {
         $AsBuiltName = Read-Host -Prompt "Enter a name for the As Built report configuration file [AsBuiltReport]"
         if (($AsBuiltName -like $null) -or ($AsBuiltName -eq "")) {
             $AsBuiltName = "AsBuiltReport"
@@ -161,8 +173,6 @@ function New-AsBuiltConfig {
         }
         $AsBuiltConfigPath = Join-Path -Path $AsBuiltExportPath -ChildPath "$AsBuiltName.json"
         $Config | ConvertTo-Json | Out-File $AsBuiltConfigPath
-    } else {
-        break
     }
     $Config
     #endregion Save configuration

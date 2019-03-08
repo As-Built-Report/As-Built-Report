@@ -24,7 +24,7 @@ function New-AsBuiltReport {
         By default, page orientation will be set to Portrait
     .PARAMETER StylePath
         Specifies the path to a custom style script for the report to use.
-    .PARAMETER Path
+    .PARAMETER OutputPath
         Specifies the path to save the report. If not specified the report will be saved in the script folder.
     .PARAMETER Timestamp
         Specifies whether to append a timestamp string to the report filename.
@@ -49,30 +49,30 @@ function New-AsBuiltReport {
         Creates a VMware vSphere As Built Document in HTML & Word formats. The document will highlight particular issues which exist within the environment.
     .EXAMPLE
         PS C:\>$Creds = Get-Credential
-        PS C:\>New-AsBuiltReport -Target 192.168.1.100 -Credentials $Creds -Format Text -Report PureStorage.FlashArray -Timestamp
+        PS C:\>New-AsBuiltReport -Target 192.168.1.100 -Credential $Creds -Format Text -Report PureStorage.FlashArray -Timestamp
 
         Creates a Pure Storage FlashArray As Built document in Text format and appends a timestamp to the filename. Uses stored credentials to connect to system.
     .EXAMPLE
-        PS C:\>New-AsBuiltReport -IP 192.168.1.100 -Username admin -Password admin -Report Cisco.UCSManager -StylePath c:\scripts\AsBuiltReport\Styles\ACME.ps1
+        PS C:\>New-AsBuiltReport -Target 192.168.1.100 -Username admin -Password admin -Report Cisco.UCSManager -StylePath c:\scripts\AsBuiltReport\Styles\ACME.ps1
 
         Creates a Cisco UCS As Built document in default format (Word) with a customised style.
     .EXAMPLE
-        PS C:\>New-AsBuiltReport -IP 192.168.1.100 -Username admin -Password admin -Report Nutanix -SendEmail
+        PS C:\>New-AsBuiltReport -Target 192.168.1.100 -Username admin -Password admin -Report Nutanix.AOS -SendEmail
 
-        Creates a Nutanix As Built document in default format (Word). Report will be attached and sent via email.
+        Creates a Nutanix AOS As Built document in default format (Word). Report will be attached and sent via email.
     .EXAMPLE
-        PS C:\>New-AsBuiltReport -IP 192.168.1.100 -Username admin -Password admin -Format HTML -Report VMware.vSphere -AsBuiltConfigPath C:\scripts\asbuilt.json
+        PS C:\>New-AsBuiltReport -Target 192.168.1.100 -Username admin -Password admin -Format HTML -Report VMware.vSphere -AsBuiltConfigPath C:\scripts\asbuilt.json
         
         Creates a VMware vSphere As Built Document in HTML format, using the configuration in the asbuilt.json file located in the C:\scripts\ folder.
     .NOTES
         Version:        0.3.0
-        Author:         Tim Carman
-        Twitter:        @tpcarman
-        Github:         tpcarman
+        Author(s):      Tim Carman / Matt Allford
+        Twitter:        @tpcarman / @mattallford
+        Github:         AsBuiltReport
         Credits:        Iain Brighton (@iainbrighton) - PScribo module
-                        Carl Webster (@carlwebster) - Documentation Script Concept
+                        
     .LINK
-        https://github.com/tpcarman/As-Built-Report
+        https://github.com/AsBuiltReport
         https://github.com/iainbrighton/PScribo
     #>
 
@@ -80,22 +80,22 @@ function New-AsBuiltReport {
     [CmdletBinding()]
     param (
         [Parameter(
-            Position  = 0,
+            Position = 0,
             Mandatory = $true,
             HelpMessage = 'Please specify which report type you wish to run.'
         )]
-        [ValidateScript({
-            $InstalledReportModules = Get-Module -Name "AsBuiltReport.*"
-            $ValidReports = foreach ($InstalledReportModule in $InstalledReportModules) {
-                $NameArray = $InstalledReportModule.Name.Split('.')
-                "$($NameArray[-2]).$($NameArray[-1])"
-            }
-            if ($ValidReports -contains $_) {
-                $true
-            } else {
-                throw "Invalid report type specified! Please use one of the following [$($ValidReports -Join ', ')]"
-            }
-        })]
+        [ValidateScript( {
+                $InstalledReportModules = Get-Module -Name "AsBuiltReport.*"
+                $ValidReports = foreach ($InstalledReportModule in $InstalledReportModules) {
+                    $NameArray = $InstalledReportModule.Name.Split('.')
+                    "$($NameArray[-2]).$($NameArray[-1])"
+                }
+                if ($ValidReports -contains $_) {
+                    $true
+                } else {
+                    throw "Invalid report type specified! Please use one of the following [$($ValidReports -Join ', ')]"
+                }
+            })]
         [string] $Report,
 
         [Parameter(
@@ -127,7 +127,7 @@ function New-AsBuiltReport {
 
         [Parameter(
             Position = 4,
-            Mandatory = $False,
+            Mandatory = $false,
             HelpMessage = 'Determines the document page orientation'
         )]
         [ValidateNotNullOrEmpty()]
@@ -135,18 +135,18 @@ function New-AsBuiltReport {
         [String] $Orientation = 'Portrait',
 
         [Parameter(
-            Mandatory = $False,
+            Mandatory = $false,
             HelpMessage = 'Please provide the username to connect to the target system'
         )]
         [ValidateNotNullOrEmpty()]
-        [String] $username,
+        [String] $Username,
 
         [Parameter(
-            Mandatory = $False,
+            Mandatory = $false,
             HelpMessage = 'Please provide the password to connect to the target system'
         )]
         [ValidateNotNullOrEmpty()]
-        [String] $password,
+        [String] $Password,
 
         [Parameter(
             Mandatory = $false,
@@ -166,7 +166,7 @@ function New-AsBuiltReport {
             HelpMessage = 'Please provide the path to the document output file'
         )]
         [ValidateNotNullOrEmpty()] 
-        [String] $Path,
+        [String] $OutputPath,
 
         [Parameter(
             Mandatory = $false,
@@ -198,14 +198,12 @@ function New-AsBuiltReport {
 
         # Check credentials have been supplied
         if ($Credential -and (!($Username -and !($Password)))) {
-        }
-        Elseif (($Username -and $Password) -and !($Credential)) {
+        } Elseif (($Username -and $Password) -and !($Credential)) {
             # Convert specified Password to secure string
             $SecurePassword = ConvertTo-SecureString $Password -AsPlainText -Force
             $Credential = New-Object System.Management.Automation.PSCredential ($Username, $SecurePassword)
-        }
-        Elseif (!$Credential -and (!($Username -and !($Password)))) {
-            Write-Error "Please supply credentials to connect to $target"
+        } Elseif (!$Credential -and (!($Username -and !($Password)))) {
+            Write-Error "Please supply credentials to connect to $Target"
             Break
         }
 
@@ -216,6 +214,13 @@ function New-AsBuiltReport {
         if ($AsbuiltConfigPath) {
             if (Test-Path -Path $AsBuiltConfigPath) {
                 $Global:AsBuiltConfig = Get-Content -Path $AsBuiltConfigPath | ConvertFrom-Json
+                <#
+                if ($Timestamp) {
+                    $FileName = $Global:AsBuiltConfig.Report.Name + " - " + (Get-Date -Format 'yyyy-MM-dd_HH.mm.ss')
+                } else {
+                    $FileName = $Global:AsBuiltConfig.Report.Name
+                }
+                #>
             }
         } else {
             $Global:AsBuiltConfig = New-AsBuiltConfig
@@ -246,17 +251,27 @@ function New-AsBuiltReport {
             
             if (Test-Path -Path $ReportConfigPath) {
                 $Global:ReportConfig = Get-Content -Path $ReportConfigPath | ConvertFrom-Json
+                if ($Timestamp) {
+                    $FileName = $Global:ReportConfig.Report.Name + " - " + (Get-Date -Format 'yyyy-MM-dd_HH.mm.ss')
+                } else {
+                    $FileName = $Global:ReportConfig.Report.Name
+                }
             } else {
                 #Create the report JSON and save it in the UserFolder specified in the Base Config
                 New-AsBuiltReportConfig -Report $Report -Path $AsBuiltConfig.UserFolder.Path
                 $Global:ReportConfig = Get-Content -Path $ReportConfigPath | ConvertFrom-Json
+                if ($Timestamp) {
+                    $FileName = $Global:ReportConfig.Report.Name + " - " + (Get-Date -Format 'yyyy-MM-dd_HH.mm.ss')
+                } else {
+                    $FileName = $Global:ReportConfig.Report.Name
+                }
             }#End if test-path
         }#End if ReportConfigPath
 
         #endregion Variable config
 
         #region Generate PScribo document
-        $AsBuiltReport = Document $Global:AsBuiltConfig.Report.Name -Verbose {
+        $AsBuiltReport = Document $FileName -Verbose {
             #Set Document Style
             if ($StylePath) {
                 .$StylePath
@@ -264,7 +279,13 @@ function New-AsBuiltReport {
 
             & "Invoke-$($ReportModule)" -Target $Target -Credential $Credential -StyleName $StylePath
         }
-        $AsBuiltReport | Export-Document -Path $Path -Format $Format
+        Try {
+            $AsBuiltReport | Export-Document -Path $OutputPath -Format $Format
+            Write-Output "$FileName has been saved to $OutputPath"
+        } catch {
+            $Err = $_
+            Write-Error $Err
+        }
         #endregion Generate PScribo document
 
         #region Globals cleanup
