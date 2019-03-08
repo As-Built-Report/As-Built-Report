@@ -26,8 +26,8 @@ A good quality pull request will have the following characteristics:
 
 ### Submitting pull requests
 1. Fork this repository.
-2. Add `https://github.com/tpcarman/As-Built-Report.git` as a remote named `upstream`.
-    - `git remote add upstream https://github.com/tpcarman/As-Built-Report.git`
+2. Add `https://github.com/AsBuiltReport/AsBuiltReport.git` as a remote named `upstream`.
+    - `git remote add upstream https://github.com/AsBuiltReport/AsBuiltReport.git`
 3. Create your feature branch from `dev`.
 4. Work on your feature.
     - Update CHANGELOG.md with add / remove / change information
@@ -144,8 +144,9 @@ New-ModuleManifest @manifest
 
 10. That's the main shell for a new report repository completed! Make a Pull Request from your fork to the main repository for the initial commit with the main framework for the new report
 
-The last step is to make a pull request to the main AsBuiltReport project to add your new report as a Required module for the project. AsBuiltReport contains a file in the root directory called `AsBuiltReport.psd1`. Make a pull request that adds your new report repository name in to the "Required Modules" section.
-
+The last step is to make a pull request to the main AsBuiltReport repository to do the following things;
+1. Add your new report module as a required module for AsbuiltReport in `AsBuiltReport.psd1`.
+2. Add your report to the "validateset" for the -Report parameter on the `New-AsBuiltReportConfig` function
 
 ## License
 By contributing, you agree that your contributions will be licensed under its MIT License.
