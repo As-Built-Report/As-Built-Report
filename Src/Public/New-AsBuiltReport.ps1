@@ -101,8 +101,7 @@ function New-AsBuiltReport {
         [Parameter(
             Position = 1,
             Mandatory = $true,
-            HelpMessage = 'Please provide the IP/FQDN of the system',
-            ParameterSetName = 'Default'
+            HelpMessage = 'Please provide the IP/FQDN of the system'
         )]
         [ValidateNotNullOrEmpty()]
         [Alias('Cluster', 'Server', 'IP')]
@@ -111,7 +110,8 @@ function New-AsBuiltReport {
         [Parameter(
             Position = 2,
             Mandatory = $false,
-            HelpMessage = 'Please provide credentails to connect to the system'
+            HelpMessage = 'Please provide credentails to connect to the system',
+            ParameterSetName = 'Credential'
         )]
         [ValidateNotNullOrEmpty()]
         [PSCredential] $Credential,
@@ -136,14 +136,16 @@ function New-AsBuiltReport {
 
         [Parameter(
             Mandatory = $false,
-            HelpMessage = 'Please provide the username to connect to the target system'
+            HelpMessage = 'Please provide the username to connect to the target system',
+            ParameterSetName = 'UsernameAndPassword'
         )]
         [ValidateNotNullOrEmpty()]
         [String] $Username,
 
         [Parameter(
             Mandatory = $false,
-            HelpMessage = 'Please provide the password to connect to the target system'
+            HelpMessage = 'Please provide the password to connect to the target system',
+            ParameterSetName = 'UsernameAndPassword'
         )]
         [ValidateNotNullOrEmpty()]
         [String] $Password,
@@ -268,6 +270,11 @@ function New-AsBuiltReport {
             }#End if test-path
         }#End if ReportConfigPath
 
+        #If the healthchecks parameter has been specified, set the global healthcheck variable so report scripts can reference the health checks
+        if ($Healthchecks) {
+            $Global:Healthcheck = $Global:ReportConfig.HealthCheck
+        }
+
         #endregion Variable config
 
         #region Generate PScribo document
@@ -295,25 +302,5 @@ function New-AsBuiltReport {
     } catch {
         $Err = $_
         Write-Error $Err
-    }
-}
-
-Register-ArgumentCompleter -CommandName 'New-AsBuiltReport' -ParameterName 'Report' -ScriptBlock {
-    param (
-        $commandName,
-        $parameterName,
-        $wordToComplete,
-        $commandAst,
-        $fakeBoundParameter
-    )
-
-    $InstalledReportModules = Get-Module -Name "AsBuiltReport.*"
-    $ValidReports = foreach ($InstalledReportModule in $InstalledReportModules) {
-        $NameArray = $InstalledReportModule.Name.Split('.')
-        "$($NameArray[-2]).$($NameArray[-1])"
-    }
-
-    $ValidReports | Where-Object {$_ -like "$wordToComplete*"} | ForEach-Object {
-        [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', $_)
     }
 }

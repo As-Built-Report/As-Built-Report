@@ -1,8 +1,7 @@
 # Get public function definition files and dot source them
 $Public = @(Get-ChildItem -Path $PSScriptRoot\Src\Public\*.ps1)
-$Private = @(Get-ChildItem -Path $PSScriptRoot\Src\Private\*.ps1)
 
-foreach ($Module in ($Public + $Private)) {
+foreach ($Module in ($Public)) {
     try {
         . $Module.FullName
     } catch {
