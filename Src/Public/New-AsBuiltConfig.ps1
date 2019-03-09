@@ -52,20 +52,53 @@ function New-AsBuiltConfig {
     Write-Host '---------------------------------------------' -ForegroundColor Cyan
     Write-Host ' <            Email Configuration          > ' -ForegroundColor Cyan
     Write-Host '---------------------------------------------' -ForegroundColor Cyan
-
-    $MailInfo = Read-Host -Prompt "Would you like to enter SMTP information for the As Built report? (y/n)"
-    while ("y", "n" -notcontains $MailInfo) {
-        $MailInfo = Read-Host -Prompt "Would you like to enter SMTP information for the As Built report? (y/n)"
+    if (!($SendEmail)) {
+        $ConfigureMailSettings = Read-Host -Prompt "Would you like to enter SMTP configuration? (y/n)"
+        while ("y", "n" -notcontains $ConfigureMailSettings) {
+            $ConfigureMailSettings = Read-Host -Prompt "Would you like to enter SMTP configuration? (y/n)"
+        }
     }
-
-    if ($MailInfo -eq 'y') {
+    if (($SendEmail) -or ($ConfigureMailSettings -eq "y")) {
         $MailServer = Read-Host -Prompt "Enter the mail server FQDN / IP address"
-        $MailServerPort = Read-Host -Prompt "Enter the mail server port number [25/587]"
+        while (($MailServer -eq $null) -or ($MailServer -eq "")) {
+            $MailServer = Read-Host -Prompt "Enter the mail server FQDN / IP Address" 
+        }
+        if (($MailServer -eq 'smtp.office365.com') -or ($MailServer -eq 'smtp.gmail.com')) {
+            $MailServerPort = Read-Host -Prompt "Enter the mail server port number [587]"
+            if (($MailServerPort -eq $null) -or ($MailServerPort -eq "")) {
+                $MailServerPort = '587'
+            }
+        } else {
+            $MailServerPort = Read-Host -Prompt "Enter the mail server port number [25]"
+            if (($MailServerPort -eq $null) -or ($MailServerPort -eq "")) {
+                $MailServerPort = '25'
+            }
+        }        
         $MailServerUseSSL = Read-Host -Prompt "Use SSL for mail server connection? (true/false)"
+        while ("true", "false" -notcontains $MailServerUseSSL) {
+            $MailServerUseSSL = Read-Host -Prompt "Use SSL for mail server connection? (true/false)"
+        }
         $MailCredentials = Read-Host -Prompt "Require mail server authentication? (true/false)"
-        $MailFrom = Read-Host -Prompt "Enter the mail sender address ['Some Person <some.person@example.com']"
-        [array] $MailTo = Read-Host -Prompt "Enter one or more recipient email addresses ['person.one@example.com', 'Person Two <person.two@example.com>']"
-        $MailBody = Read-Host -Prompt "Enter the email message body content [$ReportName attached]"
+        while ("true", "false" -notcontains $MailCredentials) {
+            $MailCredentials = Read-Host -Prompt "Require mail server authentication? (true/false)"
+        }
+        $MailFrom = Read-Host -Prompt "Enter the mail sender address"
+        while (($MailFrom -eq $null) -or ($MailFrom -eq "")) {
+            $MailFrom = Read-Host -Prompt "Enter the mail sender address" 
+        }
+        $MailRecipients = @()
+        do {
+            $MailTo = Read-Host -Prompt "Enter the mail server recipient address"
+            $MailRecipients += $MailTo
+            $AnotherRecipient = @()
+            while ("y", "n" -notcontains $AnotherRecipient) {
+                $AnotherRecipient = Read-Host -Prompt "Do you want to enter another recipient? (y/n)" 
+            }
+        }until($AnotherRecipient -eq "n")
+        $MailBody = Read-Host -Prompt "Enter the email message body content"
+        if (($MailBody -eq $null) -or ($MailBody -eq "")) {
+            $MailBody = "As Built Report attached"
+        }
     }
 
     $Config.Email = @{
@@ -74,7 +107,7 @@ function New-AsBuiltConfig {
         'UseSSL' = $MailServerUseSSL
         'Credentials' = $MailCredentials
         'From' = $MailFrom
-        'To' = $MailTo
+        'To' = $MailRecipients
         'Body' = $MailBody
     }
     #endregion Email Configuration
@@ -84,9 +117,9 @@ function New-AsBuiltConfig {
     Write-Host '---------------------------------------------' -ForegroundColor Cyan
     Write-Host ' <          Report Configuration           > ' -ForegroundColor Cyan
     Write-Host '---------------------------------------------' -ForegroundColor Cyan
-    $ReportConfigFolder = Read-Host -Prompt "Enter the full path of the folder to use for storing report JSON configuration Files and custom style scripts [$env:USERPROFILE\AsBuiltFiles]"
+    $ReportConfigFolder = Read-Host -Prompt "Enter the full path of the folder to use for storing report JSON configuration Files and custom style scripts [$env:USERPROFILE\AsBuiltReport]"
     if (($ReportConfigFolder -like $null) -or ($ReportConfigFolder -eq "")) {
-        $ReportConfigFolder = "$env:USERPROFILE\AsBuiltFiles"
+        $ReportConfigFolder = "$env:USERPROFILE\AsBuiltReport"
     }
 
     #If the folder doesn't exist, create it
