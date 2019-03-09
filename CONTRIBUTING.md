@@ -7,7 +7,7 @@ Your input is welcome! Contributing to this project is as easy as:
 - Proposing new features
 - Creating a new report
 
-When contributing to this repository, please first discuss the change you wish to make via [issue](https://github.com/tpcarman/As-Built-Report/issues), or [direct message](https://powershell.slack.com/messages/D3MU9DP8S) in the [PowerShell Slack](https://powershell.slack.com) channel before making a change.
+When contributing to this repository, please first discuss the change you wish to make via [issue](https://github.com/AsBuiltReport/AsBuiltReport/issues), or [direct message](https://powershell.slack.com/messages/D3MU9DP8S) in the [PowerShell Slack](https://powershell.slack.com) channel before making a change.
 
 ## Develop with Github
 This project uses Github to host code, to track issues and feature requests, as well as accept pull requests.
@@ -46,7 +46,7 @@ A good quality pull request will have the following characteristics:
 In short, when you submit code changes, your submissions are understood to be under the same [MIT License](http://choosealicense.com/licenses/mit/) that covers the project. Feel free to contact the maintainers if that's a concern.
 
 ## Report Issues and Bugs
-[GitHub issues](https://github.com/tpcarman/As-Built-Report/issues) is used to track issues and bugs. Report a bug by opening a new issue, it's that easy!
+[GitHub issues](https://github.com/AsBuiltReport/AsBuiltReport/issues) is used to track issues and bugs. Report a bug by opening a new issue, it's that easy!
 
 ## Submit bug reports with detail, background, and sample code
 
@@ -73,8 +73,7 @@ Use [PSScriptAnalyzer](https://github.com/PowerShell/PSScriptAnalyzer) to check 
 - Favour readability over brevity 
 
 ### DON'T
-- Do not include code within report script to install or import PowerShell modules. Instead, use [\#requires](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_requires?view=powershell-6) statements to ensure Windows PowerShell version, modules, snap-ins, and module and snap-in version prerequisites are met.
-
+- Do not include code within report script to install or import PowerShell modules.
 
 ## Creating a New Report Repository
 
@@ -106,18 +105,23 @@ Export-ModuleMember -Function $Public.BaseName
 5. Create the following folder structure under the root folder:
 
 ```
-───SRC
-    ├───Assets
-    │   └───Styles
+───Src
     └───Public
 ```
 
 6. In the `Public` folder, create a .ps1 file named `Invoke-<ReportName>.ps1`. For example, `Invoke-AsBuiltReport.HPE.NimbleStorage.ps1`. This powershell script file will contain at least one function, with the function name being the same as the ps1 file, so in thie example the function would be named `Invoke-AsBuiltReport.HPE.NimbleStorage`
 
-7. In the project root folder, create a JSON file, named <ReportName>.json. For example, `AsBuiltReport.HPE.NimbleStorage.json`. Copy the json configuration below in to the file as a starting point:
+7. In the project root folder, create a JSON file, named <ReportName>.json. For example, `AsBuiltReport.HPE.NimbleStorage.json`. Copy the json configuration below in to the file as a starting point.
 ```json
 {
+    "Report": {
+        "Name": "<Vendor Name> As Built Report",
+        "Version": "1.0",
+        "Status": "Released"
+    },
     "Options": {
+    },
+    "Section": {
     },
     "InfoLevel": {
         "_comment_": "0 = Disabled, 1 = Summary, 2 = Informative, 3 = Detailed, 4 = Adv Detailed, 5 = Comprehensive"
@@ -149,4 +153,4 @@ The last step is to make a pull request to the main AsBuiltReport repository to 
 2. Add your report to the "validateset" for the -Report parameter on the `New-AsBuiltReportConfig` function
 
 ## License
-By contributing, you agree that your contributions will be licensed under its MIT License.
+By contributing, you agree that your contributions will be licensed under the MIT License.
