@@ -114,9 +114,6 @@ function New-AsBuiltConfig {
 
     #region Report Configuration Folder
     Clear-Host
-    #Write-Host '---------------------------------------------' -ForegroundColor Cyan
-    #Write-Host '  <     Report Configuration Folder       >  ' -ForegroundColor Cyan
-    #Write-Host '---------------------------------------------' -ForegroundColor Cyan
     Write-Host '---------------------------------------------' -ForegroundColor Cyan
     Write-Host ' <          Report Configuration           > ' -ForegroundColor Cyan
     Write-Host '---------------------------------------------' -ForegroundColor Cyan

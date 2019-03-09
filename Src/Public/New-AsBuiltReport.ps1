@@ -217,13 +217,6 @@ function New-AsBuiltReport {
         if ($AsbuiltConfigPath) {
             if (Test-Path -Path $AsBuiltConfigPath) {
                 $Global:AsBuiltConfig = Get-Content -Path $AsBuiltConfigPath | ConvertFrom-Json
-                <#
-                if ($Timestamp) {
-                    $FileName = $Global:AsBuiltConfig.Report.Name + " - " + (Get-Date -Format 'yyyy-MM-dd_HH.mm.ss')
-                } else {
-                    $FileName = $Global:AsBuiltConfig.Report.Name
-                }
-                #>
             }
         } else {
             $Global:AsBuiltConfig = New-AsBuiltConfig
@@ -254,20 +247,10 @@ function New-AsBuiltReport {
             
             if (Test-Path -Path $ReportConfigPath) {
                 $Global:ReportConfig = Get-Content -Path $ReportConfigPath | ConvertFrom-Json
-                if ($Timestamp) {
-                    $FileName = $Global:ReportConfig.Report.Name + " - " + (Get-Date -Format 'yyyy-MM-dd_HH.mm.ss')
-                } else {
-                    $FileName = $Global:ReportConfig.Report.Name
-                }
             } else {
                 # Create the report JSON and save it in the UserFolder specified in the Base Config
                 New-AsBuiltReportConfig -Report $Report -Path $AsBuiltConfig.UserFolder.Path
                 $Global:ReportConfig = Get-Content -Path $ReportConfigPath | ConvertFrom-Json
-                if ($Timestamp) {
-                    $FileName = $Global:ReportConfig.Report.Name + " - " + (Get-Date -Format 'yyyy-MM-dd_HH.mm.ss')
-                } else {
-                    $FileName = $Global:ReportConfig.Report.Name
-                }
             }#End if test-path
         }#End if ReportConfigPath
 
