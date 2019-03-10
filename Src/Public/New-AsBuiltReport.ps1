@@ -110,7 +110,7 @@ function New-AsBuiltReport {
 
         [Parameter(
             Position = 2,
-            Mandatory = $false,
+            Mandatory = $true,
             HelpMessage = 'Please provide credentails to connect to the system',
             ParameterSetName = 'Credential'
         )]
@@ -136,7 +136,7 @@ function New-AsBuiltReport {
         [String] $Orientation = 'Portrait',
 
         [Parameter(
-            Mandatory = $false,
+            Mandatory = $true,
             HelpMessage = 'Please provide the username to connect to the target system',
             ParameterSetName = 'UsernameAndPassword'
         )]
@@ -144,7 +144,7 @@ function New-AsBuiltReport {
         [String] $Username,
 
         [Parameter(
-            Mandatory = $false,
+            Mandatory = $true,
             HelpMessage = 'Please provide the password to connect to the target system',
             ParameterSetName = 'UsernameAndPassword'
         )]
@@ -199,15 +199,10 @@ function New-AsBuiltReport {
 
     try {
 
-        # Check credentials have been supplied
-        if ($Credential -and (!($Username -and !($Password)))) {
-        } Elseif (($Username -and $Password) -and !($Credential)) {
-            # Convert specified Password to secure string
+        # If Username and Password parameters used, convert specified Password to secure string and store in $Credential
+        if (($Username -and $Password)) {
             $SecurePassword = ConvertTo-SecureString $Password -AsPlainText -Force
             $Credential = New-Object System.Management.Automation.PSCredential ($Username, $SecurePassword)
-        } Elseif (!$Credential -and (!($Username -and !($Password)))) {
-            Write-Error "Please supply credentials to connect to $Target"
-            Break
         }
 
         #region Variable config
@@ -281,7 +276,7 @@ function New-AsBuiltReport {
             & "Invoke-$($ReportModule)" -Target $Target -Credential $Credential -StylePath $StylePath
         }
         Try {
-            $AsBuiltReport | Export-Document -Path $OutputPath -Format $Format
+            $Document = $AsBuiltReport | Export-Document -Path $OutputPath -Format $Format -PassThru
             Write-Output "$FileName has been saved to $OutputPath"
         } catch {
             $Err = $_
@@ -289,12 +284,65 @@ function New-AsBuiltReport {
         }
         #endregion Generate PScribo document
 
+        #region Send-Email
+        if ($SendEmail) {
+            if ($Global.AsBuiltConfig.Email.UseSSL) {
+                # If UseSsl is enabled in the JSON configuration, send the report via SMTP using SSL and with credentials
+                $EmailArguments = @{
+                    Attachments = $Document
+                    To = $Global:AsBuiltConfig.Email.To
+                    From = $Global:AsBuiltConfig.Email.From
+                    Subject = $Global:ReportConfig.Report.Name
+                    Body = $Global:AsBuiltConfig.Email.Body
+                    SmtpServer = $Global:AsBuiltConfig.Email.Server
+                    Port = $Global:AsBuiltConfig.Email.Port
+                    UseSsl = $Global:AsBuiltConfig.Email.UseSSL
+                    Credential = $Global:AsBuiltConfig.Email.Credentials
+                }
+                Send-MailMessage @EmailArguments
+            } else {
+                # Send the report via SMTP
+                $EmailArguments = @{
+                    Attachments = $Document
+                    To = $Global:AsBuiltConfig.Email.To
+                    From = $Global:AsBuiltConfig.Email.From
+                    Subject = $Global:ReportConfig.Report.Name
+                    Body = $Global:AsBuiltConfig.Email.Body
+                    SmtpServer = $Global:AsBuiltConfig.Email.Server
+                    Port = $Global:AsBuiltConfig.Email.Port
+                }
+                Send-MailMessage @EmailArguments
+            }
+        }
+        #endregion Send-Email
+
         #region Globals cleanup
         Clear-Variable AsBuiltConfig
         Clear-Variable ReportConfig
         #endregion Globals cleanup
+
     } catch {
         $Err = $_
         Write-Error $Err
+    }
+}
+
+Register-ArgumentCompleter -CommandName 'New-AsBuiltReport' -ParameterName 'Report' -ScriptBlock {
+    param (
+        $commandName,
+        $parameterName,
+        $wordToComplete,
+        $commandAst,
+        $fakeBoundParameter
+    )
+
+    $InstalledReportModules = Get-Module -Name "AsBuiltReport.*"
+    $ValidReports = foreach ($InstalledReportModule in $InstalledReportModules) {
+        $NameArray = $InstalledReportModule.Name.Split('.')
+        "$($NameArray[-2]).$($NameArray[-1])"
+    }
+
+    $ValidReports | Where-Object {$_ -like "$wordToComplete*"} | ForEach-Object {
+        [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', $_)
     }
 }
