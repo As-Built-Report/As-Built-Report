@@ -79,7 +79,7 @@ Use [PSScriptAnalyzer](https://github.com/PowerShell/PSScriptAnalyzer) to check 
 
 If you are interested in creating a new report for the AsBuiltReport project that does not yet exist, the information in this section details the process to create a new repository that will contain the new report.
 
-1. Ask a project owner to create a new repository for your new report under the organisation on GitHub, following the naming standard `AsBuiltReport.<Vendor>.Solution`. In these intructions we will use an example by using HPE's Nimble Storage product, so the repository will be named `AsBuiltReport.HPE.NimbleStorage`. The project owner will create a new repository with a master branch and a license file and nothing else in the repository. When the repository is created, make a fork of the repository and clone it to your machine using git.
+1. Ask a project owner to create a new repository for your new report under the organisation on GitHub, following the naming standard `AsBuiltReport.<Vendor>.<Product>`. In these intructions we will use an example by using HPE's Nimble Storage product, so the repository will be named `AsBuiltReport.HPE.NimbleStorage`. The project owner will create a new repository with a master branch and a license file and nothing else in the repository. When the repository is created, make a fork of the repository and clone it to your machine using git.
 
 2. Open the newly created report folder and create a Powershell `.psm1` file, using the same name as the root folder for the file name. In this example, the .psm1 file will be called `AsBuiltReport.HPE.NimbleStorage.psm1`. Enter the code below in to the .psm1 file (you can also copy this file from another AsBuiltReport Repository and rename it if you prefer).
 
