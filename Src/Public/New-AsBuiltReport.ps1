@@ -266,6 +266,17 @@ function New-AsBuiltReport {
         
         #endregion Variable config
 
+        #region Email Server Authentication
+        # If Email Server Authentication is required, prompt user for credentials
+        if ($Global:AsBuiltConfig.Email.Credentials) {
+            Clear-Host
+            Write-Host '---------------------------------------------' -ForegroundColor Cyan
+            Write-Host '  <        Email Server Credentials       >  ' -ForegroundColor Cyan
+            Write-Host '---------------------------------------------' -ForegroundColor Cyan
+            $MailCredentials = Get-Credential -Message "Please enter the credentials for $($AsBuiltConfig.Email.Server)"
+        }
+        #endregion Email Server Authentication
+
         #region Generate PScribo document
         $AsBuiltReport = Document $FileName -Verbose {
             # Set Document Style
@@ -286,31 +297,29 @@ function New-AsBuiltReport {
 
         #region Send-Email
         if ($SendEmail) {
-            if ($Global.AsBuiltConfig.Email.UseSSL) {
-                # If UseSsl is enabled in the JSON configuration, send the report via SMTP using SSL and with credentials
-                $EmailArguments = @{
-                    Attachments = $Document
-                    To = $Global:AsBuiltConfig.Email.To
-                    From = $Global:AsBuiltConfig.Email.From
-                    Subject = $Global:ReportConfig.Report.Name
-                    Body = $Global:AsBuiltConfig.Email.Body
-                    SmtpServer = $Global:AsBuiltConfig.Email.Server
-                    Port = $Global:AsBuiltConfig.Email.Port
-                    UseSsl = $Global:AsBuiltConfig.Email.UseSSL
-                    Credential = $Global:AsBuiltConfig.Email.Credentials
+            $EmailArguments = @{
+                Attachments = $Document
+                To = $Global:AsBuiltConfig.Email.To
+                From = $Global:AsBuiltConfig.Email.From
+                Subject = $Global:ReportConfig.Report.Name
+                Body = $Global:AsBuiltConfig.Email.Body
+                SmtpServer = $Global:AsBuiltConfig.Email.Server
+                Port = $Global:AsBuiltConfig.Email.Port
+            }
+
+            if ($Global:AsBuiltConfig.Email.Credentials) {
+                if ($Global:AsBuiltConfig.Email.UseSSL) {
+                    # If UseSsl is enabled in the JSON configuration, send the report via SMTP using SSL and with credentials
+                    Send-MailMessage @EmailArguments -UseSsl -Credential $MailCredentials
+                } else {
+                    # Send the report via SMTP using SSL
+                    Send-MailMessage @EmailArguments -UseSsl
                 }
-                Send-MailMessage @EmailArguments
+            } elseif ($Global:AsBuiltConfig.Email.UseSSL) {
+                # If UseSsl is enabled in the JSON configuration, send the report via SMTP using SSL
+                Send-MailMessage @EmailArguments -UseSsl
             } else {
                 # Send the report via SMTP
-                $EmailArguments = @{
-                    Attachments = $Document
-                    To = $Global:AsBuiltConfig.Email.To
-                    From = $Global:AsBuiltConfig.Email.From
-                    Subject = $Global:ReportConfig.Report.Name
-                    Body = $Global:AsBuiltConfig.Email.Body
-                    SmtpServer = $Global:AsBuiltConfig.Email.Server
-                    Port = $Global:AsBuiltConfig.Email.Port
-                }
                 Send-MailMessage @EmailArguments
             }
         }
