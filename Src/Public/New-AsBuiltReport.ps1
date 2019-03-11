@@ -313,7 +313,7 @@ function New-AsBuiltReport {
                     Send-MailMessage @EmailArguments -UseSsl -Credential $MailCredentials
                 } else {
                     # Send the report via SMTP using SSL
-                    Send-MailMessage @EmailArguments -UseSsl
+                    Send-MailMessage @EmailArguments -Credential $MailCredentials
                 }
             } elseif ($Global:AsBuiltConfig.Email.UseSSL) {
                 # If UseSsl is enabled in the JSON configuration, send the report via SMTP using SSL
