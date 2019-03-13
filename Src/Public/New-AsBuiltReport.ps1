@@ -78,7 +78,9 @@ function New-AsBuiltReport {
     #>
 
     #region Script Parameters
-    [CmdletBinding()]
+    [CmdletBinding(
+        PositionalBinding = $false
+    )]
     param (
         [Parameter(
             Position = 0,
@@ -118,24 +120,7 @@ function New-AsBuiltReport {
         [PSCredential] $Credential,
 
         [Parameter(
-            Position = 3,
-            Mandatory = $false,
-            HelpMessage = 'Please provide the document output format'
-        )]
-        [ValidateNotNullOrEmpty()]
-        [ValidateSet('Word', 'HTML', 'Text', 'XML')]
-        [Array] $Format = 'Word',
-
-        [Parameter(
-            Position = 4,
-            Mandatory = $false,
-            HelpMessage = 'Determines the document page orientation'
-        )]
-        [ValidateNotNullOrEmpty()]
-        [ValidateSet('Portrait', 'Landscape')]
-        [String] $Orientation = 'Portrait',
-
-        [Parameter(
+            Position = 2,
             Mandatory = $true,
             HelpMessage = 'Please provide the username to connect to the target system',
             ParameterSetName = 'UsernameAndPassword'
@@ -144,6 +129,7 @@ function New-AsBuiltReport {
         [String] $Username,
 
         [Parameter(
+            Position = 3,
             Mandatory = $true,
             HelpMessage = 'Please provide the password to connect to the target system',
             ParameterSetName = 'UsernameAndPassword'
@@ -152,17 +138,22 @@ function New-AsBuiltReport {
         [String] $Password,
 
         [Parameter(
+            Position = 4,
             Mandatory = $false,
-            HelpMessage = 'Please provide the path to the custom style script'
+            HelpMessage = 'Please provide the document output format'
         )]
-        [ValidateNotNullOrEmpty()] 
-        [String] $StylePath,
+        [ValidateNotNullOrEmpty()]
+        [ValidateSet('Word', 'HTML', 'Text', 'XML')]
+        [Array] $Format = 'Word',
 
         [Parameter(
+            Position = 5,
             Mandatory = $false,
-            HelpMessage = 'Specify whether to append a timestamp to the document filename'
+            HelpMessage = 'Determines the document page orientation'
         )]
-        [Switch] $Timestamp = $false,
+        [ValidateNotNullOrEmpty()]
+        [ValidateSet('Portrait', 'Landscape')]
+        [String] $Orientation = 'Portrait',
 
         [Parameter(
             Mandatory = $false,
@@ -173,15 +164,16 @@ function New-AsBuiltReport {
 
         [Parameter(
             Mandatory = $false,
-            HelpMessage = 'Specify whether to highlight any configuration issues within the document'
+            HelpMessage = 'Please provide the path to the custom style script'
         )]
-        [Switch] $EnableHealthCheck = $false,
+        [ValidateNotNullOrEmpty()] 
+        [String] $StylePath,
 
         [Parameter(
             Mandatory = $false,
-            HelpMessage = 'Specify whether to send report via Email'
+            HelpMessage = 'Provide the file path to an existing report JSON Configuration file'
         )]
-        [Switch] $SendEmail = $false,
+        [string] $ReportConfigPath,
 
         [Parameter(
             Mandatory = $false,
@@ -191,9 +183,21 @@ function New-AsBuiltReport {
 
         [Parameter(
             Mandatory = $false,
-            HelpMessage = 'Provide the file path to an existing report JSON Configuration file'
+            HelpMessage = 'Specify whether to append a timestamp to the document filename'
         )]
-        [string] $ReportConfigPath
+        [Switch] $Timestamp = $false,
+        
+        [Parameter(
+            Mandatory = $false,
+            HelpMessage = 'Specify whether to highlight any configuration issues within the document'
+        )]
+        [Switch] $EnableHealthCheck = $false,
+
+        [Parameter(
+            Mandatory = $false,
+            HelpMessage = 'Specify whether to send report via Email'
+        )]
+        [Switch] $SendEmail = $false
     )
     #endregion Script Parameters
 
@@ -209,12 +213,17 @@ function New-AsBuiltReport {
 
         # Import the AsBuiltReport JSON configuration file
         # If no path was specified, or the specified file doesn't exist, call New-AsBuiltConfig to walk the user through the menu prompt to create a config JSON
-        if ($AsbuiltConfigPath) {
+        if ($AsBuiltConfigPath) {
             if (Test-Path -Path $AsBuiltConfigPath) {
                 $Global:AsBuiltConfig = Get-Content -Path $AsBuiltConfigPath | ConvertFrom-Json
             }
         } else {
             $Global:AsBuiltConfig = New-AsBuiltConfig
+        }
+
+        # Set ReportConfigPath as Global scope for use in New-AsBuiltConfig
+        if ($ReportConfigPath) {
+            $Global:ReportConfigPath = $ReportConfigPath
         }
 
         # If Stylepath was specified, ensure the file provided in the path exists, otherwise exit with error
@@ -251,14 +260,14 @@ function New-AsBuiltReport {
 
         # If Timestamp parameter is specified, add the timestamp to the report filename 
         if ($Timestamp) {
-            $FileName = $Global:ReportConfig.Report.Name + " - " + (Get-Date -Format 'yyyy-MM-dd_HH.mm.ss')
+            $FileName = $ReportConfig.Report.Name + " - " + (Get-Date -Format 'yyyy-MM-dd_HH.mm.ss')
         } else {
-            $FileName = $Global:ReportConfig.Report.Name
+            $FileName = $ReportConfig.Report.Name
         }
 
         # If the EnableHealthCheck parameter has been specified, set the global healthcheck variable so report scripts can reference the health checks
         if ($EnableHealthCheck) {
-            $Global:Healthcheck = $Global:ReportConfig.HealthCheck
+            $Global:Healthcheck = $ReportConfig.HealthCheck
         }
 
         # Set Global scope for Orientation parameter
@@ -268,7 +277,7 @@ function New-AsBuiltReport {
 
         #region Email Server Authentication
         # If Email Server Authentication is required, prompt user for credentials
-        if ($Global:AsBuiltConfig.Email.Credentials) {
+        if ($AsBuiltConfig.Email.Credentials) {
             Clear-Host
             Write-Host '---------------------------------------------' -ForegroundColor Cyan
             Write-Host '  <        Email Server Credentials       >  ' -ForegroundColor Cyan
@@ -299,23 +308,23 @@ function New-AsBuiltReport {
         if ($SendEmail) {
             $EmailArguments = @{
                 Attachments = $Document
-                To = $Global:AsBuiltConfig.Email.To
-                From = $Global:AsBuiltConfig.Email.From
-                Subject = $Global:ReportConfig.Report.Name
-                Body = $Global:AsBuiltConfig.Email.Body
-                SmtpServer = $Global:AsBuiltConfig.Email.Server
-                Port = $Global:AsBuiltConfig.Email.Port
+                To = $AsBuiltConfig.Email.To
+                From = $AsBuiltConfig.Email.From
+                Subject = $ReportConfig.Report.Name
+                Body = $AsBuiltConfig.Email.Body
+                SmtpServer = $AsBuiltConfig.Email.Server
+                Port = $AsBuiltConfig.Email.Port
             }
 
-            if ($Global:AsBuiltConfig.Email.Credentials) {
-                if ($Global:AsBuiltConfig.Email.UseSSL) {
+            if ($AsBuiltConfig.Email.Credentials) {
+                if ($AsBuiltConfig.Email.UseSSL) {
                     # If UseSsl is enabled in the JSON configuration, send the report via SMTP using SSL and with credentials
                     Send-MailMessage @EmailArguments -UseSsl -Credential $MailCredentials
                 } else {
                     # Send the report via SMTP using SSL
                     Send-MailMessage @EmailArguments -Credential $MailCredentials
                 }
-            } elseif ($Global:AsBuiltConfig.Email.UseSSL) {
+            } elseif ($AsBuiltConfig.Email.UseSSL) {
                 # If UseSsl is enabled in the JSON configuration, send the report via SMTP using SSL
                 Send-MailMessage @EmailArguments -UseSsl
             } else {

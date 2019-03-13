@@ -127,53 +127,58 @@ function New-AsBuiltConfig {
     #endregion Email Configuration
 
     #region Report Configuration Folder
-    Clear-Host
-    Write-Host '---------------------------------------------' -ForegroundColor Cyan
-    Write-Host ' <          Report Configuration           > ' -ForegroundColor Cyan
-    Write-Host '---------------------------------------------' -ForegroundColor Cyan
-    $ReportConfigFolder = Read-Host -Prompt "Enter the full path of the folder to use for storing report JSON configuration Files and custom style scripts [$env:USERPROFILE\AsBuiltReport]"
-    if (($ReportConfigFolder -like $null) -or ($ReportConfigFolder -eq "")) {
-        $ReportConfigFolder = "$env:USERPROFILE\AsBuiltReport"
-    }
-
-    #If the folder doesn't exist, create it
-    if (!(Test-Path -Path $ReportConfigFolder)) {
-        New-Item -Path $ReportConfigFolder -ItemType Directory
-    }
-
-    #Add the path to the folder to the JSON configuration
-    $Config.UserFolder = @{
-        'Path' = $ReportConfigFolder
-    }
-
-    #Test to see if the Report Configuration folder is empty. If it is, generate all report JSON files.
-    #If the folder is not empty, do a foreach loop through each currently installed report module and check if the
-    #report json specific to that module exists. If it does, prompt the user to see if they want to overwrite the
-    #JSON. If it doesn't exist, generate the JSON
-    $AsBuiltReportModules = Get-Module -Name "AsBuiltReport.*"
-    if (!(Get-ChildItem -Path $ReportConfigFolder -Force)) {
-        Foreach ($AsBuiltReportModule in $AsBuiltReportModules) {
-            $AsBuiltReportName = $AsBuiltReportModule.Name.Replace("AsBuiltReport.", "")
-            New-AsBuiltReportConfig -Report $AsBuiltReportName -Path $ReportConfigFolder
+    if (!($ReportConfigPath)) {
+        Clear-Host
+        Write-Host '---------------------------------------------' -ForegroundColor Cyan
+        Write-Host ' <          Report Configuration           > ' -ForegroundColor Cyan
+        Write-Host '---------------------------------------------' -ForegroundColor Cyan
+        $ReportConfigFolder = Read-Host -Prompt "Enter the full path of the folder to use for storing report JSON configuration Files and custom style scripts [$env:USERPROFILE\AsBuiltReport]"
+        if (($ReportConfigFolder -like $null) -or ($ReportConfigFolder -eq "")) {
+            $ReportConfigFolder = "$env:USERPROFILE\AsBuiltReport"
         }
-    } else {
-        try {
+
+        #If the folder doesn't exist, create it
+        if (!(Test-Path -Path $ReportConfigFolder)) {
+            New-Item -Path $ReportConfigFolder -ItemType Directory
+        }
+
+        #Add the path to the folder to the JSON configuration
+        $Config.UserFolder = @{
+            'Path' = $ReportConfigFolder
+        }
+
+        #Test to see if the Report Configuration folder is empty. If it is, generate all report JSON files.
+        #If the folder is not empty, do a foreach loop through each currently installed report module and check if the
+        #report json specific to that module exists. If it does, prompt the user to see if they want to overwrite the
+        #JSON. If it doesn't exist, generate the JSON
+        $AsBuiltReportModules = Get-Module -Name "AsBuiltReport.*"
+        if (!(Get-ChildItem -Path $ReportConfigFolder -Force)) {
             Foreach ($AsBuiltReportModule in $AsBuiltReportModules) {
                 $AsBuiltReportName = $AsBuiltReportModule.Name.Replace("AsBuiltReport.", "")
-                if (Test-Path -Path "$($ReportConfigFolder)\$($AsBuiltReportModule.Name).json") {
-                    $OverwriteReportJSON = Read-Host -Prompt "A report JSON already exists in the specified folder for $($AsBuiltReportModule.Name). Would you like to overwrite it? (y/n)"
-                    while ("y", "n" -notcontains $OverwriteReportJSON) {
-                        $OverwriteReportJSON = Read-Host -Prompt "A report JSON already exists in the specified folder for $($AsBuiltReportModule.Name). Would you like to overwrite it? (y/n)"
-                    }
-                    if ($OverwriteReportJSON -eq 'y') {
-                        New-AsBuiltReportConfig -Report $AsBuiltReportName -Path $ReportConfigFolder
-                    }
-                } else {
-                    New-AsBuiltReportConfig -Report $AsBuiltReportName -Path $ReportConfigFolder
-                }
+                New-AsBuiltReportConfig -Report $AsBuiltReportName -Path $ReportConfigFolder
             }
-        } catch {
-            Write-Error $_
+        } else {
+            try {
+                foreach ($AsBuiltReportModule in $AsBuiltReportModules) {
+                    $AsBuiltReportName = $AsBuiltReportModule.Name.Replace("AsBuiltReport.", "")
+                    if (Test-Path -Path "$($ReportConfigFolder)\$($AsBuiltReportModule.Name).json") {
+                        $OverwriteReportJSON = Read-Host -Prompt "A report JSON already exists in the specified folder for $($AsBuiltReportModule.Name). Would you like to overwrite it? (y/n)"
+                        while ("y", "n" -notcontains $OverwriteReportJSON) {
+                            $OverwriteReportJSON = Read-Host -Prompt "A report JSON already exists in the specified folder for $($AsBuiltReportModule.Name). Would you like to overwrite it? (y/n)"
+                            while ("y", "n" -notcontains $OverwriteReportJSON) {
+                                $OverwriteReportJSON = Read-Host -Prompt "A report JSON already exists in the specified folder for $($AsBuiltReportModule.Name). Would you like to overwrite it? (y/n)"
+                            }
+                            if ($OverwriteReportJSON -eq 'y') {
+                                New-AsBuiltReportConfig -Report $AsBuiltReportName -Path $ReportConfigFolder
+                            }
+                        } else {
+                            New-AsBuiltReportConfig -Report $AsBuiltReportName -Path $ReportConfigFolder
+                        }
+                    }
+                }
+            } catch {
+                Write-Error $_
+            }
         }
     }
     #endregion Report Configuration Folder
