@@ -1,4 +1,18 @@
 function New-AsBuiltConfig {
+    <#
+    .SYNOPSIS  
+        Creates As Built JSON configuration files.
+    .DESCRIPTION
+        New-AsBuiltConfig starts a menu-driven procedure in the powershell console and asks the user a series of questions
+        Answers to these questions are optionally saved in a JSON configuration file which can then be referenced using the
+        -AsBuiltConfigPath parameter on New-AsBuiltReport, to save having to answer these questions again and also to allow
+        the automation of New-AsBuiltReport.
+        
+        New-AsBuiltConfig will automatically be called by New-AsBuiltReport if the -AsBuiltConfigPath parameter is not specified
+        If a user wants to generate a new As Built JSON configuration without running a new report, this cmdlet is exported
+        in the AsBuiltReport powershell module and can be called as a standalone cmdlet.
+    #>
+
     #Run section to prompt user for information about the As Built Report to be exported to JSON format (if saved)
     $global:Config = @{}
 
@@ -136,11 +150,14 @@ function New-AsBuiltConfig {
     #If the folder is not empty, do a foreach loop through each currently installed report module and check if the
     #report json specific to that module exists. If it does, prompt the user to see if they want to overwrite the
     #JSON. If it doesn't exist, generate the JSON
+    $AsBuiltReportModules = Get-Module -Name "AsBuiltReport.*"
     if (!(Get-ChildItem -Path $ReportConfigFolder -Force)) {
-        New-AsBuiltReportConfig -Report all -Path $ReportConfigFolder
+        Foreach ($AsBuiltReportModule in $AsBuiltReportModules) {
+            $AsBuiltReportName = $AsBuiltReportModule.Name.Replace("AsBuiltReport.", "")
+            New-AsBuiltReportConfig -Report $AsBuiltReportName -Path $ReportConfigFolder
+        }
     } else {
         try {
-            $AsBuiltReportModules = Get-Module -Name "AsBuiltReport.*"
             Foreach ($AsBuiltReportModule in $AsBuiltReportModules) {
                 $AsBuiltReportName = $AsBuiltReportModule.Name.Replace("AsBuiltReport.", "")
                 if (Test-Path -Path "$($ReportConfigFolder)\$($AsBuiltReportModule.Name).json") {
