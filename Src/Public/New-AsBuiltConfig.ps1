@@ -198,9 +198,9 @@ function New-AsBuiltConfig {
         if (($AsBuiltName -like $null) -or ($AsBuiltName -eq "")) {
             $AsBuiltName = "AsBuiltReport"
         }
-        $AsBuiltExportPath = Read-Host -Prompt "Enter the path to save the As Built report configuration file [$env:USERPROFILE]"
+        $AsBuiltExportPath = Read-Host -Prompt "Enter the path to save the As Built report configuration file [$env:USERPROFILE\AsBuiltReport]"
         if (($AsBuiltExportPath -like $null) -or ($AsBuiltExportPath -eq "")) {
-            $AsBuiltExportPath = $env:USERPROFILE
+            $AsBuiltExportPath = "$env:USERPROFILE\AsBuiltReport"
         }
         $AsBuiltConfigPath = Join-Path -Path $AsBuiltExportPath -ChildPath "$AsBuiltName.json"
         $Config | ConvertTo-Json | Out-File $AsBuiltConfigPath
