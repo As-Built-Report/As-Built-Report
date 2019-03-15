@@ -12,8 +12,8 @@
             ModuleVersion = '0.7.24'
         },
         'AsBuiltReport.VMware.vSphere'
-        'AsBuiltReport.VMware.NSXv'
-        'AsBuiltReport.PureStorage.FlashArray'
+        #'AsBuiltReport.VMware.NSXv'
+        #'AsBuiltReport.PureStorage.FlashArray'
     )
     FunctionsToExport = @(
         'New-AsBuiltReport'
