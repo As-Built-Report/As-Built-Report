@@ -5,11 +5,11 @@ infrastructure systems. Reports can be generated in Text, XML, HTML and MS Word 
 custom styling to align with your company/customer's brand. The following systems are currently fully supported,
 with many more being added very shortly:
 
-- Cisco UCS
+- [Cisco UCS](https://github.com/AsBuiltReport/AsBuiltReport.Cisco.UcsManager)
 - Nutanix
-- Pure Storage FlashArray
-- [VMware NSX-V](/Src/Public/Reports/NSX/README.md)
-- [VMware vSphere](/Src/Public/Reports/vSphere/README.md)
+- [Pure Storage FlashArray](https://github.com/AsBuiltReport/AsBuiltReport.PureStorage.FlashArray)
+- [VMware NSX-V](https://github.com/AsBuiltReport/AsBuiltReport.VMware.NSXv/)
+- [VMware vSphere](https://github.com/AsBuiltReport/AsBuiltReport.VMware.vSphere)
 
 # Getting Started
 
@@ -23,6 +23,7 @@ PScribo can be installed from the PowerShell Gallery with the following command.
 ```powershell
 Install-Module PScribo
 ```
+Alternatively PScribo will automatically be installed when you install AsBuiltReport, as PScribo as listed as a required module for AsBuiltReport.
 
 Each of the specific As-Built report types may also require other modules or PSSnapins.
 The pre-requisites for each report type will be documented within its own `README.md` located in the relevant report repository.
@@ -62,13 +63,7 @@ PS C:\>New-AsBuiltReport -IP 192.168.1.100 -Username admin -Password admin -Repo
 PS C:\>New-AsBuiltReport -IP 192.168.1.100 -Username admin -Password admin -Format HTML -Report VMware.vSphere -AsBuiltConfigPath C:\scripts\asbuilt.json
 ```
 
-# Reports
-
-## VMware NSX-V As Built Report
-- Information relating to the VMware NSX-V As-Built Report can be found in the report's [README.md](/Src/Public/Reports/NSX/README.md)
-
-## VMware vSphere As Built Report
-- Information relating to the VMware vSphere As-Built Report can be found in the report's [README.md](/Src/Public/Reports/vSphere/README.md)
+## Examples
 
 # Release Notes
 

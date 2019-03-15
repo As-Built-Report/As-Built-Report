@@ -25,13 +25,13 @@ A good quality pull request will have the following characteristics:
 - The code contained within will meet the best practices set by the team wherever possible.
 
 ### Submitting pull requests
-1. Fork this repository.
+1. Fork this repository (AsBuiltReport), or if you are developing a report, fork the specific report repository. The example below uses the main AsBuiltReport repository in the command examples.
 2. Add `https://github.com/AsBuiltReport/AsBuiltReport.git` as a remote named `upstream`.
     - `git remote add upstream https://github.com/AsBuiltReport/AsBuiltReport.git`
 3. Create your feature branch from `dev`.
 4. Work on your feature.
-    - Update CHANGELOG.md with add / remove / change information
-    - Update README.md with any new information, such as features, instructions, parameters and/or examples
+    - Update CHANGELOG.md in the repository you have worked in with add / remove / change information
+    - Update README.md in the repository you have worked in with any new information, such as features, instructions, parameters and/or examples
 5. Squash commits into one or two succinct commits.
     - `git rebase -i HEAD~n` # n being the number of previous commits to rebase
 6. Ensure that your branch is up to date with `upstream/dev`.
@@ -40,7 +40,9 @@ A good quality pull request will have the following characteristics:
     - `git rebase upstream/dev`
 7. Push branch to your fork.
     - `git push --force`
-8. Open a Pull Request against the `dev` branch of this repository.
+8. Open a Pull Request against the `dev` branch of this repository. We have Pull Requests templates in all repositories for this project. Please follow the template with each Pull Request
+
+Pull requests will be reviewed as soon as possible.
 
 ## Any contributions you make will be under the MIT Software License
 In short, when you submit code changes, your submissions are understood to be under the same [MIT License](http://choosealicense.com/licenses/mit/) that covers the project. Feel free to contact the maintainers if that's a concern.
@@ -66,11 +68,13 @@ Code contributors should follow the [PowerShell Guidelines](https://github.com/P
 Use [PSScriptAnalyzer](https://github.com/PowerShell/PSScriptAnalyzer) to check code quality against PowerShell Best Practices.
 
 ### DO
-- Use [\#requires](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_requires?view=powershell-6) statements in all report scripts to ensure Windows PowerShell version, modules, snap-ins, and module and snap-in version prerequisites are met.
 - Use [PascalCasing](https://docs.microsoft.com/en-us/dotnet/standard/design-guidelines/capitalization-conventions) for all public member, type, and namespace names consisting of multiple words.
-- Keep the number of required PowerShell modules to 2 per script.
 - Use custom label headers within tables, where required, to make easily readable labels.
-- Favour readability over brevity 
+- Favour readability over brevity
+- Use PSCustomObjects to store data that will be exported to a PScribo table. This helps with readability
+- Try to perform all safe commands (Get-*, Get API call, etc) at the start of a report script (after functions) so it can easily be seen what data is being collected
+- Use comments written in English, but don't overdo it. Comments should serve to your reasoning and decision-making, not attempt to explain what a command does
+- Maintain a change log as per [these guidelines](https://keepachangelog.com/en/1.0.0/). The change log should be named CHANGELOG.md
 
 ### DON'T
 - Do not include code within report script to install or import PowerShell modules.
@@ -79,7 +83,7 @@ Use [PSScriptAnalyzer](https://github.com/PowerShell/PSScriptAnalyzer) to check 
 
 If you are interested in creating a new report for the AsBuiltReport project that does not yet exist, the information in this section details the process to create a new repository that will contain the new report.
 
-1. Ask a project owner to create a new repository for your new report under the organisation on GitHub, following the naming standard `AsBuiltReport.<Vendor>.<Product>`. In these intructions we will use an example by using HPE's Nimble Storage product, so the repository will be named `AsBuiltReport.HPE.NimbleStorage`. The project owner will create a new repository with a master branch and a license file and nothing else in the repository. When the repository is created, make a fork of the repository and clone it to your machine using git.
+1. Ask a project owner to create a new repository for your new report under the organisation on GitHub, following the naming standard `AsBuiltReport.<Vendor>.<Product>`. In these intructions we will use an example by using HPE's Nimble Storage product, so the repository will be named `AsBuiltReport.HPE.NimbleStorage`. The project owner will create a new repository with a master branch, a dev branch, both containing a license file and nothing else in the repository. When the repository is created, make a fork of the repository and clone it to your machine using git.
 
 2. Open the newly created report folder and create a Powershell `.psm1` file, using the same name as the root folder for the file name. In this example, the .psm1 file will be called `AsBuiltReport.HPE.NimbleStorage.psm1`. Enter the code below in to the .psm1 file (you can also copy this file from another AsBuiltReport Repository and rename it if you prefer).
 
@@ -98,9 +102,9 @@ foreach ($Module in $Public) {
 Export-ModuleMember -Function $Public.BaseName
 ```
 
-3. Copy the .github folder from another AsbuiltReport repository in to the root of the new report folder. This file contains the default Pull Request template for the project as well as the Issue Templates for the project. These should be standard across all of the repositories for the AsBuiltReport project
+3. Copy the .github folder from another AsbuiltReport repository in to the root of the new report folder. This file contains the default Pull Request template for the project as well as the Issue Templates for the project. These should be standard across all of the repositories for the AsBuiltReport project.
 
-4. Copy the .vscode folder from another AsBuiltReport repository in to the root of the new report folder. This contains the Visual Studio code style that is used for consistency across all of the repositories in the AsBuiltReport project
+4. Copy the .vscode folder from another AsBuiltReport repository in to the root of the new report folder. This contains the Visual Studio code style that is used for consistency across all of the repositories in the AsBuiltReport project.
 
 5. Create the following folder structure under the root folder:
 
@@ -131,7 +135,7 @@ Export-ModuleMember -Function $Public.BaseName
 }
 ```
 
-8. We now need to create a Powershell module manifest file. Open powershell and change your directory to the root folder of the new report. Change the data in the example below for the `$manifest` variable to show the accurate details for your new report. Run the code below in the powershell session to create a new Powershell manifest file, which should result in a `psd1` file being created in the root folder for the new report:
+8. We now need to create a Powershell module manifest file. Open a PowerShell console and change your directory to the root folder of the new report. Change the data in the example below for the `$manifest` variable to show the accurate details for your new report. Run the code below in the powershell session to create a new Powershell manifest file, which should result in a `psd1` file being created in the root folder for the new report:
 
 ```Powershell
 $manifest = @{
@@ -146,11 +150,10 @@ New-ModuleManifest @manifest
 
 9. Create a README.md file in the root folder. Ensure the README contains useful information before your first pull request!
 
-10. That's the main shell for a new report repository completed! Make a Pull Request from your fork to the main repository for the initial commit with the main framework for the new report
+10. That's the main shell for a new report repository completed! Make a Pull Request from your fork to the dev branch of the main repository for the initial commit with the main framework for the new report
 
-The last step is to make a pull request to the main AsBuiltReport repository to do the following things;
+The last step is to make a pull request to the main AsBuiltReport project and:
 1. Add your new report module as a required module for AsbuiltReport in `AsBuiltReport.psd1`.
-2. Add your report to the "validateset" for the -Report parameter on the `New-AsBuiltReportConfig` function
 
 ## License
 By contributing, you agree that your contributions will be licensed under the MIT License.
