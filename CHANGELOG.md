@@ -1,5 +1,9 @@
 # New-AsBuiltReport Changelog
 
+## [0.4.1] - 2019-03-16
+### Changed
+- Implemented  -ListAvailable parameter on Get-Module validation in New-AsBuiltReport and New-AsbuiltReportConfig
+
 ## [0.4.0] - 2019-03-16
 ### Added
 - `New-AsbuiltConfig` cmdlet to generate a base As Built Report JSON configuration file
