@@ -28,13 +28,12 @@ Alternatively PScribo will automatically be installed when you install AsBuiltRe
 Each of the specific As-Built report types may also require other modules or PSSnapins.
 The pre-requisites for each report type will be documented within its own `README.md` located in the relevant report repository.
 
-## Installing AsBuiltReport
-
+### Module Installation
 ```powershell
 Install-Module AsBuiltReport
 ```
 
-## Using AsBuiltReport
+## Examples
 
 Each report type utilises a common set of parameters. Additional parameters specific to each
 report will be detailed in the report's `README.md` file, along with any relevant examples.
@@ -63,33 +62,8 @@ PS C:\>New-AsBuiltReport -IP 192.168.1.100 -Username admin -Password admin -Repo
 PS C:\>New-AsBuiltReport -IP 192.168.1.100 -Username admin -Password admin -Format HTML -Report VMware.vSphere -AsBuiltConfigPath C:\scripts\asbuilt.json
 ```
 
-## Examples
 
-# Release Notes
-
-## [0.3.0] - Unreleased
-### What's New
-
-- This minor version contains a complete refactor of the project so that it is now a PowerShell module.
-- We will now aim to host this module on PSGallery in the near future to allow for easier installation and usage.
-
-## [0.2.1] - 2018-09-19
-### Changed
-- Added parameter validation to `Type` parameter
-- Fixed `Target` parameter to accept multiple IP/FQDN
-- Fixed issues with CWD paths
-- Updated default JSON configuration filename to align with documentation
-
-## [0.2.0] - 2018-08-13
-### Added
-- New As Built JSON configuration structure
-  - new `AsBuiltConfigPath` parameter
-  - allows unique configuration files to be created and saved
-  - if `AsBuiltConfigPath` parameter is not specified, user is prompted for As Built report configuration information
-  - `New-AsBuiltConfig.ps1` & `Config.json` files are no longer required 
-
-## All Releases
-### Known Issues
+## Known Issues
 - Table Of Contents (TOC) may be missing in Word formatted report
 
     When opening the DOC report, MS Word prompts the following 
