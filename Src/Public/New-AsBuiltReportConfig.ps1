@@ -20,7 +20,7 @@ function New-AsBuiltReportConfig {
         )]
         [ValidateNotNullOrEmpty()]
         [ValidateScript( {
-                $InstalledReportModules = Get-Module -Name "AsBuiltReport.*"
+                $InstalledReportModules = Get-Module -Name "AsBuiltReport.*" -ListAvailable
                 $ValidReports = foreach ($InstalledReportModule in $InstalledReportModules) {
                     $NameArray = $InstalledReportModule.Name.Split('.')
                     "$($NameArray[-2]).$($NameArray[-1])"
@@ -77,7 +77,7 @@ Register-ArgumentCompleter -CommandName 'New-AsBuiltReportConfig' -ParameterName
         $fakeBoundParameter
     )
 
-    $InstalledReportModules = Get-Module -Name "AsBuiltReport.*"
+    $InstalledReportModules = Get-Module -Name "AsBuiltReport.*" -ListAvailable
     $ValidReports = foreach ($InstalledReportModule in $InstalledReportModules) {
         $NameArray = $InstalledReportModule.Name.Split('.')
         "$($NameArray[-2]).$($NameArray[-1])"

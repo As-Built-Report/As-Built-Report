@@ -88,7 +88,7 @@ function New-AsBuiltReport {
             HelpMessage = 'Please specify which report type you wish to run.'
         )]
         [ValidateScript( {
-                $InstalledReportModules = Get-Module -Name "AsBuiltReport.*"
+                $InstalledReportModules = Get-Module -Name "AsBuiltReport.*" -ListAvailable
                 $ValidReports = foreach ($InstalledReportModule in $InstalledReportModules) {
                     $NameArray = $InstalledReportModule.Name.Split('.')
                     "$($NameArray[-2]).$($NameArray[-1])"
@@ -354,7 +354,7 @@ Register-ArgumentCompleter -CommandName 'New-AsBuiltReport' -ParameterName 'Repo
         $fakeBoundParameter
     )
 
-    $InstalledReportModules = Get-Module -Name "AsBuiltReport.*"
+    $InstalledReportModules = Get-Module -Name "AsBuiltReport.*" -ListAvailable
     $ValidReports = foreach ($InstalledReportModule in $InstalledReportModules) {
         $NameArray = $InstalledReportModule.Name.Split('.')
         "$($NameArray[-2]).$($NameArray[-1])"
