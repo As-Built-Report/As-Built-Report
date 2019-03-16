@@ -1,6 +1,6 @@
 @{
     RootModule = 'AsBuiltReport.psm1'
-    ModuleVersion = '0.3.0'
+    ModuleVersion = '0.4.0'
     GUID = 'a1c8a406-8896-4d7d-8e23-68cbd06eb570'
     Author = 'Tim Carman'
     Copyright = '(c) 2018 Tim Carman. All rights reserved.'
@@ -12,8 +12,8 @@
             ModuleVersion = '0.7.24'
         },
         'AsBuiltReport.VMware.vSphere'
-        #'AsBuiltReport.VMware.NSXv'
-        #'AsBuiltReport.PureStorage.FlashArray'
+        'AsBuiltReport.VMware.NSXv'
+        'AsBuiltReport.PureStorage.FlashArray'
     )
     FunctionsToExport = @(
         'New-AsBuiltReport'

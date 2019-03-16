@@ -1,8 +1,18 @@
 # New-AsBuiltReport Changelog
 
-## [Unreleased]
+## [0.4.0] - 2019-03-16
+### Added
+- `New-AsbuiltConfig` cmdlet to generate a base As Built Report JSON configuration file
+- `New-AsBuiltReport` cmdlet to generate a report JSON configuration file
+- Username and Password parameters on `New-AsBuiltReport`
+- Support for setting the document orientation for the output report
+- ReportConfigPath parameter to `New-AsBuiltReport`
+
 ### Changed
-- Add "-Raw" paramter to get-content when importing report JSON data to fix a known issue
+- Full refactor of the project to support modules
+- Rewrote the menu prompting process and system to analyse read-host responses
+- Renamed several parameters on `New-AsBuiltReport` to be consistent and provide more meaning
+
 
 ## 0.3.0
 
