@@ -1,9 +1,9 @@
 function New-AsBuiltReportConfig {
     <#
     .SYNOPSIS  
-        Creates As Built Report JSON configuration files.
+        Creates JSON configuration files for individual As Built Reports.
     .DESCRIPTION
-        Creates As Built Report JSON configuration files.
+        Creates JSON configuration files for individual As Built Reports.
     .PARAMETER Report
         Specifies the type of report configuration to create.
     .PARAMETER Path
@@ -55,13 +55,21 @@ function New-AsBuiltReportConfig {
     }
     # Find the root folder where the module is located for the report that has been specified
     try {
-        $Module = Get-Module "AsBuiltReport.$Report"
+        $Module = Get-Module -ListAvailable "AsBuiltReport.$Report"
         if ($Name) {
-            Copy-Item -Path "$($Module.ModuleBase)\$($Module.Name).json" -Destination "$($Path)\$($Name).json" -Force
-            Write-Output "$Name JSON configuration file created in $Path"
+            if (!(Test-Path -Path "$($Path)\$($Name).json")) {
+                Copy-Item -Path "$($Module.ModuleBase)\$($Module.Name).json" -Destination "$($Path)\$($Name).json"
+                Write-Output "$Name JSON configuration file created in $Path"
+            } else {
+                Write-Error "$Name filename already exists in $Path"
+            }
         } else {
-            Copy-Item -Path "$($Module.ModuleBase)\$($Module.Name).json" -Destination $Path -Force
-            Write-Output "$($Module.Name) JSON configuration file created in $Path"
+            if (!(Test-Path -Path "$($Module.ModuleBase)\$($Module.Name).json")) {
+                Copy-Item -Path "$($Module.ModuleBase)\$($Module.Name).json" -Destination $Path
+                Write-Output "$($Module.Name) JSON configuration file created in $Path"
+            } else {
+                Write-Error "$($Module.Name).json report configuration already exists in $Path"
+            }
         }
     } catch {
         Write-Error $_
