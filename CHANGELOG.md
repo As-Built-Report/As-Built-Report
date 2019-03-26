@@ -1,5 +1,11 @@
 # New-AsBuiltReport Changelog
 
+## [1.0.0] - 2019-03-26
+### Changed
+- Made -OutputPath mandatory on New-Asbuiltreport, update help comments accordingly
+- Resolve issue with New-AsBuiltReportConfig cmdlet generating custom report configuration files
+- Update version to 1.0.0 for the module to signify a major release milestone
+
 ## [0.4.1] - 2019-03-16
 ### Changed
 - Implemented  -ListAvailable parameter on Get-Module validation in New-AsBuiltReport and New-AsbuiltReportConfig

@@ -26,7 +26,6 @@ function New-AsBuiltReport {
         Specifies the path to a custom style .ps1 script for the report to use.
     .PARAMETER OutputPath
         Specifies the path to save the report.
-        If not specified the report will be saved in the user's profile folder.
     .PARAMETER Timestamp
         Specifies whether to append a timestamp string to the report filename.
         By default, the timestamp string is not added to the report filename.
@@ -44,29 +43,34 @@ function New-AsBuiltReport {
         If this parameter is not specified, a default report configuration JSON is copied to the specifed user folder.
         If this paramter is specified and the path to a JSON file is invalid, the script will terminate
     .EXAMPLE
-        PS C:\>New-AsBuiltReport -Target 192.168.1.100 -Username admin -Password admin -Format HTML,Word -Report VMware.vSphere -EnableHealthCheck
+        PS C:\>New-AsBuiltReport -Target 192.168.1.100 -Username admin -Password admin -Format HTML,Word -Report VMware.vSphere -EnableHealthCheck -OutputPath c:\scripts\
 
         Creates a VMware vSphere As Built Report in HTML & Word formats. The document will highlight particular issues which exist within the environment.
+        The report will be saved to c:\scripts.
     .EXAMPLE
         PS C:\>$Creds = Get-Credential
-        PS C:\>New-AsBuiltReport -Target 192.168.1.100 -Credential $Creds -Format Text -Report PureStorage.FlashArray -Timestamp
+        PS C:\>New-AsBuiltReport -Target 192.168.1.100 -Credential $Creds -Format Text -Report PureStorage.FlashArray -Timestamp -OutputPath c:\scripts\
 
         Creates a Pure Storage FlashArray As Built Report in Text format and appends a timestamp to the filename. 
         Stored credentials are used to connect to the system.
+        The report will be saved to c:\scripts.
     .EXAMPLE
-        PS C:\>New-AsBuiltReport -Target 192.168.1.100 -Username admin -Password admin -Report Cisco.UCSManager -StylePath c:\scripts\AsBuiltReport\Styles\ACME.ps1
+        PS C:\>New-AsBuiltReport -Target 192.168.1.100 -Username admin -Password admin -Report Cisco.UCSManager -StylePath c:\scripts\AsBuiltReport\Styles\ACME.ps1 -OutputPath c:\scripts\
 
         Creates a Cisco UCS As Built Report in default format (Word) with a customised style.
+        The report will be saved to c:\scripts.
     .EXAMPLE
-        PS C:\>New-AsBuiltReport -Target 192.168.1.100 -Username admin -Password admin -Report Nutanix.AOS -SendEmail
+        PS C:\>New-AsBuiltReport -Target 192.168.1.100 -Username admin -Password admin -Report Nutanix.AOS -SendEmail -OutputPath c:\scripts\
 
         Creates a Nutanix AOS As Built Report in default format (Word). Report will be attached and sent via email.
+        The report will be saved to c:\scripts.
     .EXAMPLE
-        PS C:\>New-AsBuiltReport -Target 192.168.1.100 -Username admin -Password admin -Format HTML -Report VMware.vSphere -AsBuiltConfigPath C:\scripts\asbuiltreport.json
+        PS C:\>New-AsBuiltReport -Target 192.168.1.100 -Username admin -Password admin -Format HTML -Report VMware.vSphere -AsBuiltConfigPath C:\scripts\asbuiltreport.json -OutputPath c:\scripts\
         
         Creates a VMware vSphere As Built Report in HTML format, using the configuration in the asbuiltreport.json file located in the C:\scripts\ folder.
+        The report will be saved to c:\scripts.
     .NOTES
-        Version:        0.3.0
+        Version:        1.0.0
         Author(s):      Tim Carman / Matt Allford
         Twitter:        @tpcarman / @mattallford
         Github:         AsBuiltReport
@@ -156,7 +160,7 @@ function New-AsBuiltReport {
         [String] $Orientation = 'Portrait',
 
         [Parameter(
-            Mandatory = $false,
+            Mandatory = $true,
             HelpMessage = 'Please provide the path to the document output file'
         )]
         [ValidateNotNullOrEmpty()] 
