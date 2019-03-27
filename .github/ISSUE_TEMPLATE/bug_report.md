@@ -23,7 +23,7 @@ If applicable, add screenshots to help explain your problem.
 **System (please provide the following information about the system from which you are trying to generate a report):**
  - OS: [e.g. Windows 10]
  - Windows PowerShell version [Provide output from the following command: `$PSVersionTable.PSVersion`]
- - Vendor PowerShell Module name and version [e.g. VMware PowerCLI 11.2]
+ - 3rd paty PowerShell module name and version [e.g. VMware PowerCLI 11.2]
  - AsBuiltReport version [e.g. 1.0.0]
 
 **Additional context**
