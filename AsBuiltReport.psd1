@@ -97,7 +97,7 @@
     PrivateData = @{
 
         PSData = @{
-            Tags = @('AsBuiltReport', 'Report', 'Documentation', 'PScribo')
+            Tags = @('AsBuiltReport', 'Report', 'Documentation', 'PScribo', 'PSEdition_Desktop')
             LicenseUri = 'https://raw.githubusercontent.com/AsBuiltReport/AsBuiltReport/master/LICENSE'
             ProjectUri = 'https://github.com/AsBuiltReport'
             # IconUri = ''
