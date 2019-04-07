@@ -30,7 +30,7 @@ CompanyName = ''
 Copyright = '(c) 2018 Tim Carman. All rights reserved.'
 
 # Description of the functionality provided by this module
-Description = 'A PowerShell module to generate as built reports on the configuration of datacentre infrastucture.'
+Description = 'A PowerShell module manifest which installs AsBuiltReport core and report modules required to generate As-Built documentation for many common datacentre infrastructure systems.'
 
 # Minimum version of the Windows PowerShell engine required by this module
 PowerShellVersion = '5.1'
