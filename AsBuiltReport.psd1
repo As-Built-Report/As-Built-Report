@@ -11,7 +11,7 @@
     # RootModule = ''
 
     # Version number of this module.
-    ModuleVersion = '1.0.1'
+    ModuleVersion = '1.0.2'
 
     # Supported PSEditions
     CompatiblePSEditions = 'Desktop'
@@ -29,7 +29,7 @@
     Copyright = '(c) 2018 Tim Carman. All rights reserved.'
 
     # Description of the functionality provided by this module
-    Description = 'A PowerShell module which installs the complete AsBuiltReport module library used to generate As-Built documentation for many common datacentre infrastructure systems.'
+    Description = 'A PowerShell module manifest which installs the complete AsBuiltReport module library used to generate As-Built documentation for many common datacentre infrastructure systems.'
 
     # Minimum version of the Windows PowerShell engine required by this module
     PowerShellVersion = '5.1'
@@ -113,7 +113,7 @@
             ProjectUri = 'https://github.com/AsBuiltReport'
 
             # A URL to an icon representing this module.
-            IconUri = 'https://github.com/AsBuiltReport/AsBuiltReport/blob/master/AsBuiltReport.png'
+            IconUri = 'https://raw.githubusercontent.com/AsBuiltReport/AsBuiltReport/master/AsBuiltReport.png'
 
             # ReleaseNotes of this module
             ReleaseNotes = 'https://raw.githubusercontent.com/AsBuiltReport/AsBuiltReport/master/CHANGELOG.md'
