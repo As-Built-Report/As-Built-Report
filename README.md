@@ -21,4 +21,4 @@
 
 # AsBuiltReport
 
-AsBuiltReport is a PowerShell module manifest which installs the core and report modules required to generate As-Built documentation for many common datacentre infrastructure systems.
+AsBuiltReport is a PowerShell module which installs the complete AsBuiltReport module library used to generate As-Built documentation for many common datacentre infrastructure systems.
