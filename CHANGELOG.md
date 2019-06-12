@@ -1,6 +1,6 @@
 # AsBuiltReport Changelog
 
-## [1.0.1] - 2019-06-12
+## [1.0.2] - 2019-06-13
 ### Added
 - Add AsBuiltReport project icon 
 
