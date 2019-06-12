@@ -7,7 +7,6 @@
 #
 
 @{
-
     # Script module or binary module file associated with this manifest.
     # RootModule = ''
 
@@ -51,12 +50,17 @@
     # ProcessorArchitecture = ''
 
     # Modules that must be imported into the global environment prior to importing this module
-    RequiredModules = @(@{ModuleName = 'PScribo'; ModuleVersion = '0.7.24'; }, 
-        'AsBuiltReport.Core', 
-        'AsBuiltReport.VMware.vSphere', 
-        'AsBuiltReport.VMware.NSXv', 
-        'AsBuiltReport.PureStorage.FlashArray', 
-        'AsBuiltReport.Cisco.UcsManager')
+    RequiredModules = @(
+        @{
+            ModuleName = 'PScribo'
+            ModuleVersion = '0.7.24'
+        },
+        'AsBuiltReport.Core',
+        'AsBuiltReport.VMware.vSphere',
+        'AsBuiltReport.VMware.NSXv',
+        'AsBuiltReport.PureStorage.FlashArray',
+        'AsBuiltReport.Cisco.UcsManager'
+    )
 
     # Assemblies that must be loaded prior to importing this module
     # RequiredAssemblies = @()
