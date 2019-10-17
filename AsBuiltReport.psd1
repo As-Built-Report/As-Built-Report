@@ -11,7 +11,7 @@
     # RootModule = ''
 
     # Version number of this module.
-    ModuleVersion = '1.0.2'
+    ModuleVersion = '1.0.3'
 
     # Supported PSEditions
     CompatiblePSEditions = 'Desktop'
@@ -59,7 +59,8 @@
         'AsBuiltReport.VMware.vSphere',
         'AsBuiltReport.VMware.NSXv',
         'AsBuiltReport.PureStorage.FlashArray',
-        'AsBuiltReport.Cisco.UcsManager'
+        'AsBuiltReport.Cisco.UcsManager',
+        'AsBuiltReport.Nutanix.PrismElement'
     )
 
     # Assemblies that must be loaded prior to importing this module
