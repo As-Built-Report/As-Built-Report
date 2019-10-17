@@ -1,3 +1,10 @@
+<!--
+  Title: As Built Report
+  Description: A curated list of amazingly awesome regex resources.
+  Author: Tim Carman (@tpcarman)
+  Website: https://www.asbuiltreport.com
+  -->
+
 <p align="center">
     <a href="https://www.powershellgallery.com/packages/AsBuiltReport/" alt="PowerShell Gallery Version">
         <img src="https://img.shields.io/powershellgallery/v/AsBuiltReport.svg" /></a>
