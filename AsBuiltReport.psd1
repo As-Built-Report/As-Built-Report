@@ -11,7 +11,7 @@
     # RootModule = ''
 
     # Version number of this module.
-    ModuleVersion = '1.0.3'
+    ModuleVersion = '1.0.4'
 
     # Supported PSEditions
     CompatiblePSEditions = 'Desktop'
@@ -26,7 +26,7 @@
     # CompanyName = ''
 
     # Copyright statement for this module
-    Copyright = '(c) 2018 Tim Carman. All rights reserved.'
+    Copyright = '(c) 2020 Tim Carman. All rights reserved.'
 
     # Description of the functionality provided by this module
     Description = 'A PowerShell module manifest which installs the complete AsBuiltReport module library used to generate As-Built documentation for many common datacentre infrastructure systems.'
@@ -53,14 +53,16 @@
     RequiredModules = @(
         @{
             ModuleName = 'PScribo'
-            ModuleVersion = '0.7.24'
+            ModuleVersion = '0.8.0'
         },
         'AsBuiltReport.Core',
         'AsBuiltReport.VMware.vSphere',
+        'AsBuiltReport.VMware.ESXi',
         'AsBuiltReport.VMware.NSXv',
         'AsBuiltReport.PureStorage.FlashArray',
         'AsBuiltReport.Cisco.UcsManager',
-        'AsBuiltReport.Nutanix.PrismElement'
+        'AsBuiltReport.Nutanix.PrismElement',
+        'AsBuiltReport.Rubrik.CDM'
     )
 
     # Assemblies that must be loaded prior to importing this module
